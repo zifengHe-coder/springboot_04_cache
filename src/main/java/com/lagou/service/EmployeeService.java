@@ -4,6 +4,9 @@ import com.lagou.constants.CacheNameConstants;
 import com.lagou.mapper.EmployeeMapper;
 import com.lagou.pojo.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
  * @create 2022/8/15 18:13
  */
 @Service
+@CacheConfig(cacheNames = CacheNameConstants.EMPLOYEE)
 public class EmployeeService {
     @Autowired
     private EmployeeMapper mapper;
@@ -32,8 +36,25 @@ public class EmployeeService {
      * @param id
      * @return
      */
-    @Cacheable(value = CacheNameConstants.EMPLOYEE, key = "#root.methodName+':'+#id", unless = "#result == null")
+    @Cacheable(key = "#id", unless = "#result == null")
     public Employee getEmpById(Integer id) {
         return mapper.getEmpById(id);
+    }
+
+    @CachePut(key = "#result.id")
+    public Employee updateEmp(Employee employee) {
+        mapper.updateEmp(employee);
+        return employee;
+    }
+
+    @CachePut(key = "#result.id")
+    public Employee insertEmp(Employee employee) {
+        mapper.insertEmp(employee);
+        return employee;
+    }
+
+    @CacheEvict(key = "#id", beforeInvocation = true)
+    public void delEmp(Integer id) {
+        mapper.deleteEmp(id);
     }
 }

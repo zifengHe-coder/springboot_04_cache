@@ -12,6 +12,7 @@ public interface EmployeeMapper {
     public Employee getEmpById(Integer id);
 
     @Insert("insert into employee(last_name, email, gender, d_id) values(#{lastName}, #{email}, #{gender}, #{dId})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     public void insertEmp(Employee employee);
 
     @Update("update employee set last_name = #{lastName}, email = #{email}, gender = #{gender}, d_id = #{dId} where id = #{id}")
